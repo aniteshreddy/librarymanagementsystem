@@ -64,7 +64,7 @@ public class EmployeePresentationImpl implements LibraryPresentation {
 				} else
 					System.out.println("Record not changed");
 			} catch (StockNotAvailableException e) {
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 
 			break;

@@ -1,8 +1,7 @@
 package com.library.persistance;
 
-import java.io.IOException;
-
 import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,16 +22,25 @@ public class EmployeeDaoImpl extends BookDistributionDaoImpl implements LibraryD
 	@Override
 	public boolean stockRecordManipulation(int bookId, int value) throws StockNotAvailableException {
 
-		int rows = 0;
-		
-			rows=	 jdbcTemplate.update("update BookDetails set stock=stock+(?) where book_id=?;", value, bookId);
-		
+		if (checkStock(bookId, value)) {
+			int rows = 0;
 
-		if (rows > 0) {
-			return true;
+			rows = jdbcTemplate.update("update BookDetails set stock=stock+(?) where book_id=?;", value, bookId);
+
+			if (rows > 0) {
+				return true;
+			}
 		}
 
 		throw new StockNotAvailableException();
+	}
+
+	private boolean checkStock(int bookId, int value) {
+		Map<String, Object> rows = jdbcTemplate.queryForMap("select * from BookDetails where book_id=?", bookId);
+		if (((int) rows.get("stock") + value) >= 0) {
+			return true;
+		} else
+			return false;
 	}
 
 	@Override
