@@ -22,7 +22,7 @@ public class BookDistributionPresentationImpl implements LibraryPresentation {
 
 	@Autowired
 	@Qualifier("employeeServiceImp")
-	private LibraryService userService ;
+	private LibraryService userService;
 
 	@Override
 	public void showMenus() {
@@ -42,12 +42,7 @@ public class BookDistributionPresentationImpl implements LibraryPresentation {
 			System.out.println("Enter user ID");
 			int userId = scanner.nextInt();
 
-			try {
-				userService.getAllBooks().stream().forEach(System.out::println);
-			} catch (ClassNotFoundException | SQLException | IOException e) {
-
-				System.out.println(e.getMessage());
-			}
+			userService.getAllBooks().stream().forEach(System.out::println);
 
 			System.out.println("Enter book ID");
 			int bookId = scanner.nextInt();
@@ -61,14 +56,11 @@ public class BookDistributionPresentationImpl implements LibraryPresentation {
 					System.out.println("Book issue successful");
 				else
 					System.out.println("Book issue failed");
-			} catch (ClassNotFoundException |  IOException | StockNotAvailableException
-					| BookNotDistributable | MutipleSameBookIssue e) {
+			} catch (StockNotAvailableException | BookNotDistributable | MutipleSameBookIssue e) {
 
 				System.out.println(e.getMessage());
 			}
-			catch (SQLException e) {
-				System.out.println("Currently the book is not in stock");
-			}
+
 			break;
 
 		case 2:
@@ -77,15 +69,10 @@ public class BookDistributionPresentationImpl implements LibraryPresentation {
 			System.out.println("Enter user ID");
 			userId = scanner.nextInt();
 			Collection<BookIssueBean> bookIssueBeans;
-			try {
 
-				bookIssueBeans = userService.getAllUserDetails(userId);
-				if (bookIssueBeans.isEmpty()) {
-					System.out.println("User id does not exist");
-					break;
-				}
-			} catch (ClassNotFoundException | SQLException | IOException e) {
-				System.out.println(e.getMessage());
+			bookIssueBeans = userService.getAllUserDetails(userId);
+			if (bookIssueBeans.isEmpty()) {
+				System.out.println("User id does not exist");
 				break;
 			}
 
@@ -103,8 +90,7 @@ public class BookDistributionPresentationImpl implements LibraryPresentation {
 					break;
 				}
 				System.out.println("Invalid issue id or book already returned");
-			} catch (ClassNotFoundException | SQLException | IOException | InvalidReturnDateException
-					| StockNotAvailableException e) {
+			} catch (InvalidReturnDateException | StockNotAvailableException e) {
 				System.out.println(e.getMessage());
 			}
 			break;
@@ -113,18 +99,13 @@ public class BookDistributionPresentationImpl implements LibraryPresentation {
 			System.out.println("Get details of user");
 			System.out.println("Enter user ID");
 			userId = scanner.nextInt();
-			try {
-				for (BookIssueBean bookIssueBean2 : userService.getAllUserDetails(userId)) {
-					System.out.println(bookIssueBean2);
-				}
-			} catch (ClassNotFoundException | SQLException | IOException e) {
 
-				System.out.println(e.getMessage());
-			}
+			for (BookIssueBean bookIssueBean2 : userService.getAllUserDetails(userId))
+				System.out.println(bookIssueBean2);
+
 			break;
 		case 0:
 			System.out.println("Bye! Bye!");
-
 			System.exit(0);
 			break;
 

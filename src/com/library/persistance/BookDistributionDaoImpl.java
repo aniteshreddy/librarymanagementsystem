@@ -13,10 +13,13 @@ import com.library.bean.BookIssueBean;
 import com.library.exception.BookNotDistributable;
 import com.library.exception.MutipleSameBookIssue;
 import com.library.exception.StockNotAvailableException;
+import com.library.helper.BookDetailRowMapper;
+import com.library.helper.BookIssueRowMapper;
 import com.library.helper.SqlConnectionManager;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +33,7 @@ public abstract class BookDistributionDaoImpl implements LibraryDao {
 
 	@Override
 	public boolean issueRecord(BookIssueBean bookDetails) throws StockNotAvailableException, BookNotDistributable,
-			MutipleSameBookIssue, ClassNotFoundException, SQLException, IOException {
-		if (!checkRecord(bookDetails.getBookId())) {
-			return false;
-		}
-		new EmployeeDaoImpl().stockRecordManipulation(bookDetails.getBookId(), -1);
-		checkIfDistributed(bookDetails.getBookId(), bookDetails.getUserId());
+			MutipleSameBookIssue {
 
 		int rows = jdbcTemplate.update("insert into Issue(user_id,book_id,issue_date,scheduled_date) values(?,?,?,?);",
 				bookDetails.getUserId(), bookDetails.getBookId(), Timestamp.valueOf(bookDetails.getIssueDate()),
@@ -49,25 +47,32 @@ public abstract class BookDistributionDaoImpl implements LibraryDao {
 
 	}
 
-	private boolean checkIfDistributed(int bookId, int userId) throws MutipleSameBookIssue {
+	@Override
+	public boolean checkIfDistributed(int bookId, int userId) throws MutipleSameBookIssue {
 
-		int rows = jdbcTemplate.queryForObject(
-				"select * from Issue where book_id=? and user_id=? and return_date is null;", Integer.class, bookId,
-				userId);
-
-		if (rows > 0) {
-			throw new MutipleSameBookIssue();
+		Map<String, Object> rows=null;
+		try {
+		rows = jdbcTemplate.queryForMap(
+				"select * from Issue where book_id=? and user_id=? and return_date is null;", 
+				bookId, userId);
+		}catch (Exception e) {
+			
 		}
-		return true;
+		
+		if (rows==null) {
+			return false;
+		}
+		throw new MutipleSameBookIssue();
+
 	}
 
-	private boolean checkRecord(int bookId)
-			throws SQLException, ClassNotFoundException, IOException, BookNotDistributable {
-		int rows = jdbcTemplate.queryForObject(
-				"select distributable from BookDetails where book_id=? and distributable=true", Integer.class, bookId);
+	@Override
+	public boolean checkRecord(int bookId) throws BookNotDistributable {
+		Map<String, Object> rows = null;
 
-		if (rows > 0) {
+		rows = jdbcTemplate.queryForMap("select * from BookDetails where book_id=?;", bookId);
 
+		if ((boolean) rows.get("distributable")) {
 			return true;
 		}
 
@@ -75,15 +80,16 @@ public abstract class BookDistributionDaoImpl implements LibraryDao {
 	}
 
 	@Override
-	public boolean returnRecord(BookIssueBean bookDetails)
-			throws ClassNotFoundException, SQLException, IOException, StockNotAvailableException {
+	public boolean returnRecord(BookIssueBean bookIssueBean)
+			throws StockNotAvailableException {
 
 		int rows = jdbcTemplate.update(
 				"update Issue set return_date=current_timestamp(), charges=? where issue_id=? and return_date is NULL;",
-				bookDetails.getCharges(), bookDetails.getIssueId());
+				bookIssueBean.getCharges(), bookIssueBean.getIssueId());
 
 		if (rows > 0) {
-			new EmployeeDaoImpl().stockRecordManipulation(bookDetails.getBookId(), 1);
+		
+			stockRecordManipulation(bookIssueBean.getBookId(), 1);
 			return true;
 		}
 

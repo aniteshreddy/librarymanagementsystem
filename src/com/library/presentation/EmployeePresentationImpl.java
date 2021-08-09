@@ -37,33 +37,21 @@ public class EmployeePresentationImpl implements LibraryPresentation {
 		case 1:
 			System.out.println("All user Records");
 
-			try {
-				for (BookIssueBean bookIssueBean : userService.getAllUserDetails(null)) {
-					System.out.println(bookIssueBean);
-				}
-			} catch (ClassNotFoundException | SQLException | IOException e) {
-
-				e.printStackTrace();
-			}
+			for (BookIssueBean bookIssueBean : userService.getAllUserDetails(null))
+				System.out.println(bookIssueBean);
 
 			break;
 		case 2:
 			System.out.println("Listing all books");
-			try {
-				userService.getAllBooks().stream().forEach(System.out::println);
-			} catch (ClassNotFoundException | SQLException | IOException e) {
 
-				System.out.println(e.getMessage());
-			}
+			userService.getAllBooks().stream().forEach(System.out::println);
+
 			break;
 
 		case 3:
 			System.out.println("Changes in stock");
-			try {
-				userService.getAllBooks().stream().forEach(System.out::println);
-			} catch (ClassNotFoundException | SQLException | IOException e) {
-				System.out.println(e.getMessage());
-			}
+
+			userService.getAllBooks().stream().forEach(System.out::println);
 
 			System.out.println("Enter book ID");
 			int bookId = scanner.nextInt();
@@ -75,11 +63,10 @@ public class EmployeePresentationImpl implements LibraryPresentation {
 					System.out.println("Record changed");
 				} else
 					System.out.println("Record not changed");
-			} catch (ClassNotFoundException | IOException | StockNotAvailableException e) {
-				System.out.println(e.getMessage());
-			} catch (SQLException e) {
-				System.out.println("Stock cannot be less than 0");
+			} catch (StockNotAvailableException e) {
+				e.printStackTrace();
 			}
+
 			break;
 
 		case 0:

@@ -1,42 +1,40 @@
 package com.library.service;
 
-import java.io.IOException;
 
 import java.time.temporal.ChronoUnit;
 
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-import com.library.bean.BookDetailBean;
 import com.library.bean.BookIssueBean;
 import com.library.exception.BookNotDistributable;
 import com.library.exception.InvalidReturnDateException;
 import com.library.exception.MutipleSameBookIssue;
 import com.library.exception.StockNotAvailableException;
 import com.library.persistance.LibraryDao;
-import com.library.persistance.BookDistributionDaoImpl;
-import com.library.persistance.EmployeeDaoImpl;
+
 
 @Service
 public abstract class BookDistrubutionServiceImpl implements LibraryService {
 
 	@Autowired
 	@Qualifier("employeeDaoImpl")
-	protected LibraryDao libraryDao ;
-
+	protected LibraryDao libraryDao;
 
 	@Override
-	public boolean issueBook(BookIssueBean bookIssueBean) throws ClassNotFoundException, SQLException, IOException,
-			StockNotAvailableException, BookNotDistributable, MutipleSameBookIssue {
-
+	public boolean issueBook(BookIssueBean bookIssueBean)
+			throws StockNotAvailableException, BookNotDistributable, MutipleSameBookIssue {
+		if (!libraryDao.checkRecord(bookIssueBean.getBookId())) {
+			return false;
+		}
+		libraryDao.stockRecordManipulation(bookIssueBean.getBookId(), -1);
+		if (libraryDao.checkIfDistributed(bookIssueBean.getBookId(), bookIssueBean.getUserId())) {
+			return false;
+		}
 		bookIssueBean.setIssueDate(LocalDateTime.now());
 		bookIssueBean.setScheduleDate(LocalDateTime.now().plusDays(7));
 		return libraryDao.issueRecord(bookIssueBean);
@@ -44,8 +42,8 @@ public abstract class BookDistrubutionServiceImpl implements LibraryService {
 	}
 
 	@Override
-	public boolean returnBook(BookIssueBean bookIssueBean) throws ClassNotFoundException, SQLException, IOException,
-			InvalidReturnDateException, StockNotAvailableException {
+	public boolean returnBook(BookIssueBean bookIssueBean)
+			throws InvalidReturnDateException, StockNotAvailableException {
 
 		LocalDateTime scheduledDate = bookIssueBean.getScheduleDate();
 
@@ -68,19 +66,7 @@ public abstract class BookDistrubutionServiceImpl implements LibraryService {
 		return libraryDao.returnRecord(bookIssueBean);
 
 	}
-	
-//	InvalidReturnDateException invalidReturnDateException = 
-//
-//	@Override
-//	public UserDetailsBean getCharges(int userId, int bookId, LocalDateTime issueDate)
-//			throws ClassNotFoundException, SQLException, IOException {
-//
-//		BookIssueBean bookIssueBean = new BookIssueBean();
-//		bookIssueBean.setBookId(bookId);
-//		bookIssueBean.setUserId(userId);
-//		bookIssueBean.setIssueDate(issueDate);
-//
-//		return libraryDao.getChargesRecord(bookIssueBean);
-//	}
+
+
 
 }

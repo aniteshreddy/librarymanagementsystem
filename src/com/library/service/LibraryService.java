@@ -14,10 +14,10 @@ import com.library.exception.StockNotAvailableException;
 
 public interface LibraryService {
 //	UserDetailsBean getCharges(int userId,int bookId,LocalDateTime issueDate) throws ClassNotFoundException, SQLException, IOException;
-	boolean issueBook(BookIssueBean bookIssueBean) throws ClassNotFoundException, SQLException, IOException, StockNotAvailableException, BookNotDistributable, MutipleSameBookIssue;
-	boolean returnBook(BookIssueBean bookIssueBean) throws ClassNotFoundException, SQLException, IOException, InvalidReturnDateException, StockNotAvailableException;
-	Collection<BookDetailBean> getAllBooks() throws ClassNotFoundException, SQLException, IOException;
-	boolean stockManipulation(int bookId,int value) throws ClassNotFoundException, SQLException, IOException, StockNotAvailableException;
-	Collection<BookIssueBean> getAllUserDetails(Integer id) throws ClassNotFoundException, SQLException, IOException;
-	boolean addBook(BookDetailBean bookDetailBean) throws ClassNotFoundException, SQLException, IOException;
+	boolean issueBook(BookIssueBean bookIssueBean) throws  StockNotAvailableException, BookNotDistributable, MutipleSameBookIssue;
+	boolean returnBook(BookIssueBean bookIssueBean) throws  InvalidReturnDateException, StockNotAvailableException;
+	Collection<BookDetailBean> getAllBooks() ;
+	boolean stockManipulation(int bookId,int value) throws StockNotAvailableException;
+	Collection<BookIssueBean> getAllUserDetails(Integer id) ;
+	boolean addBook(BookDetailBean bookDetailBean) ;
 }

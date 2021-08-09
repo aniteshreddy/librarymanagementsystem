@@ -13,9 +13,9 @@ import com.library.exception.StockNotAvailableException;
 public interface LibraryDao {
 //	UserDetailsBean getChargesRecord(BookIssueBean bookissue) throws ClassNotFoundException, SQLException, IOException;
 
-	boolean issueRecord(BookIssueBean bookDetails) throws StockNotAvailableException, BookNotDistributable, MutipleSameBookIssue, ClassNotFoundException, SQLException, IOException;
+	boolean issueRecord(BookIssueBean bookDetails) throws StockNotAvailableException, BookNotDistributable, MutipleSameBookIssue;
 
-	boolean returnRecord(BookIssueBean bookDetails) throws StockNotAvailableException, ClassNotFoundException, SQLException, IOException;
+	boolean returnRecord(BookIssueBean bookDetails) throws StockNotAvailableException;
 
 	boolean addBookRecord(BookDetailBean bookBean) ;
 
@@ -25,6 +25,10 @@ public interface LibraryDao {
 	Collection<BookDetailBean> getAllBooksRecord() ;
 
 	boolean stockRecordManipulation(int bookId,int value) throws StockNotAvailableException;
+
+	boolean checkRecord(int bookId) throws  BookNotDistributable;
+
+	boolean checkIfDistributed(int bookId, int userId) throws MutipleSameBookIssue;
 
 //	boolean checkRecord(int bookId) throws SQLException, ClassNotFoundException, IOException, BookNotDistributable;
 

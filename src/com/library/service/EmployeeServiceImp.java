@@ -18,28 +18,28 @@ import com.library.exception.StockNotAvailableException;
 @Service
 public class EmployeeServiceImp extends BookDistrubutionServiceImpl implements LibraryService {
 	@Override
-	public Collection<BookDetailBean> getAllBooks() throws ClassNotFoundException, SQLException, IOException {
+	public Collection<BookDetailBean> getAllBooks()  {
 
 		return libraryDao.getAllBooksRecord();
 	}
 
 	@Override
 	public boolean stockManipulation(int bookId, int values)
-			throws ClassNotFoundException, SQLException, IOException, StockNotAvailableException {
+			throws StockNotAvailableException {
 
 		return libraryDao.stockRecordManipulation(bookId, values);
 	}
 
 	@Override
 	public Collection<BookIssueBean> getAllUserDetails(Integer id)
-			throws ClassNotFoundException, SQLException, IOException {
+			 {
 
 		return libraryDao.getAllUserIssuesRecord(id);
 	}
 
 	@Override
 	public boolean addBook(BookDetailBean bookDetailBean)
-			throws ClassNotFoundException, SQLException, IOException {
+			 {
 		
 
 		return libraryDao.addBookRecord(bookDetailBean);
